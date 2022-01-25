@@ -73,7 +73,7 @@ def main(
 
 def mainargs(*args, **kwargs):
   from argparse import ArgumentParser
-  parser = ArgumentParser(description="Insert Module CLI description")
+  parser = ArgumentParser(description="Quickly build excel tables from different sources")
   parser.add_argument(
     "-f",
     "--input-file",
