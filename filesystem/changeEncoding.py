@@ -40,7 +40,7 @@ def main(
 
 def mainargs(*args, **kwargs):
   from argparse import ArgumentParser
-  parser = ArgumentParser(description="Insert Module CLI description")
+  parser = ArgumentParser(description="Change the encoding of a file on a copy")
   parser.add_argument(
     dest="inputFilePath",
     help=f"input file",
