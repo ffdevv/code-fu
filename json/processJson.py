@@ -47,7 +47,7 @@ def main(
 
 def mainargs(*args, **kwargs):
   from argparse import ArgumentParser
-  parser = ArgumentParser(description="Insert Module CLI description")
+  parser = ArgumentParser(description="Process a json file")
   parser.add_argument(
     "-i",
     "--input",
