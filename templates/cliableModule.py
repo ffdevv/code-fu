@@ -63,4 +63,4 @@ def mainargs(*args, **kwargs):
 
 if __name__ == "__main__":
   import sys
-  sys.exit(main(**mainargs(sys.argv[1:])))
+  sys.exit(main(**mainargs(*sys.argv[1:])))
