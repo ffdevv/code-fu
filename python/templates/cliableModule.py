@@ -20,7 +20,7 @@
   mainargs() will parse *args as cli arguments and override them
   with **kwargs if needed.
   
-  Template by @github.com/ffdevv/pythonfu
+  Template by @github.com/ffdevv/code-fu
 """
 class Defaults:
   INPUT_FILEPATH = "./someInputFile.txt"
