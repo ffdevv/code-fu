@@ -1,2 +1,2 @@
-# pythonfu
-Python programs to do simple tasks
+# Code fu
+Programs and snippets by Federico Fogo
