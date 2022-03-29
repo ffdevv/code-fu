@@ -6,7 +6,7 @@
 */
 import { useState, useEffect } from "react";
 
-export default function useStateLocallyStored(localStorageKey, initValue) {
+export default function useStateLocalStored(localStorageKey, initValue) {
   const [value, setValue] = useState(
     localStorage.getItem(localStorageKey) || initValue
   );
