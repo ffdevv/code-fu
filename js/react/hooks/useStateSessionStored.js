@@ -11,10 +11,15 @@ export default function useStateSessionStored(sessionStorageKey, initValue) {
     sessionStorage.getItem(sessionStorageKey) || initValue
   );
   
+  const free = () => {
+    setValue(null);
+    sessionStorage.removeItem(sessionStorageKey);
+  }
+  
+  
   useEffect(() => {
     sessionStorage.setItem(sessionStorageKey, value);
-    return () => sessionStorage.removeItem(sessionStorageKey);
   }, [value, sessionStorageKey]);
 
-  return [value, setValue];
+  return [value, setValue, free];
 }
