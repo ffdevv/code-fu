@@ -11,10 +11,14 @@ export default function useStateLocalStored(localStorageKey, initValue) {
     localStorage.getItem(localStorageKey) || initValue
   );
 
+  const free = () => {
+    setValue(null);
+    localStorage.removeItem(localStorageKey);
+  }
+  
   useEffect(() => {
     localStorage.setItem(localStorageKey, value);
-    return () => localStorage.removeItem(localStorageKey);
   }, [value, localStorageKey]);
 
-  return [value, setValue];
+  return [value, setValue, free];
 }
