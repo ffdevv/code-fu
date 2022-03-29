@@ -13,6 +13,7 @@ export default function useStateLocalStored(localStorageKey, initValue) {
 
   useEffect(() => {
     localStorage.setItem(localStorageKey, value);
+    return () => localStorage.removeItem(localStorageKey);
   }, [value, localStorageKey]);
 
   return [value, setValue];
