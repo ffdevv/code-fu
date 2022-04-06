@@ -9,10 +9,12 @@ import { performance } from "perf_hooks"
 
 const SALT_ROUNDS = null;
 const AUTO_ADJOUST_DIFFICULTY_TO_MS = 1500;
+const VALIDATION_RX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9\s])[^\n]{8,}$/;
+const VALIDATION_DESCRIPTION = "Password must contains: at least 1 uppercase character, 1 lowercase character, 1 special character, and length >= 8";
 
 /***
   * compute the saltRounds needed to get close to the target
-  * @param target milliseconds required for hashing a password
+  * @param {Number} target milliseconds required for hashing a password
 */
 export function getDifficulty(target) {
   const plainTextPassword = "DkepE_oe:.`^??*asd";
@@ -34,8 +36,12 @@ export function getDifficulty(target) {
 
 export default function configurePasswordManagement({
   saltRounds,
-  autoAdjoustDifficultyToMs
+  autoAdjoustDifficultyToMs,
+  validationRx,
+  validationDescription
 }) {
+  validationRx ||= VALIDATION_RX;
+  validationDescription ||= validationRx === VALIDATION_RX ? VALIDATION_DESCRIPTION : "Invalid password";
   saltRounds ||= SALT_ROUNDS;
   if (!saltRounds) {
     autoAdjoustDifficultyToMs ||= AUTO_ADJOUST_DIFFICULTY_TO_MS;
@@ -47,6 +53,19 @@ export default function configurePasswordManagement({
     saltRounds = getDifficulty(autoAdjoustDifficultyToMs);
   }
 
+  const validatePassword = (plainText, callback) => {
+    if (callback && typeof callback === 'function') {
+      return validationRx.match(plainText)
+        ? callback(null, true)
+        : callback(validationDescription, false)
+        ;
+    }
+    return Promise((resolve, reject) => {
+      if (validationRx.match(plainText)) return resolve(true);
+      reject(validationDescription);
+    })
+  }
+  const validatePasswordSync = (plainText) => !!validationRx.match(plainText);
   const hashPassword = (plainText, callback) => hash(plainText, saltRounds, callback);
   const hashPasswordSync = (plainText) => hashSync(plainText, saltRounds);
   const checkPassword = (plainText, hash, callback) => compare(plainText, hash, callback);
@@ -57,6 +76,9 @@ export default function configurePasswordManagement({
     hashPasswordSync,
     checkPassword,
     checkPasswordSync,
+    validatePassword,
+    validatePasswordSync,
+    validationDescription,
     saltRounds
   }
 }
