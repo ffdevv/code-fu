@@ -5,7 +5,7 @@
  * group 3: salt
  * group 4: hash
 */
-export const BCRYPT_HASH = /^\$(2[ayb])\$(\d{1,2})\$([a-zA-Z0-9+/]{22})([a-zA-Z0-9+/]{31})$/
+export const BCRYPT_HASH = /^\$(2[ayb])\$(\d{1,2})\$([a-zA-Z0-9./]{22})([a-zA-Z0-9./]{31})$/
 
 /**
  * Standard email format with mandatory top level domain
