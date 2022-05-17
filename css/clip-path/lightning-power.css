@@ -1,0 +1,41 @@
+/*
+  A clip-path examples of a lightning power icon
+*/
+
+.power1 {
+	background: black;
+    width: 50vw;
+    height: 100vh;
+    clip-path: polygon(60% 0, 15% 50%, 40% 50%, 0 100%, 100% 40%, 60% 40%, 100% 0);
+    position: relative;
+}
+.power1:before {
+	content: '';
+	background: red;
+	width: calc(50vw + 15px);
+    height: calc(100vh + 15px);
+    clip-path: polygon(60% 0, 15% 50%, 40% 50%, 0 100%, 100% 40%, 60% 40%, 100% 0);
+    position: absolute;
+}
+
+.power2 {
+	background: black;
+    width: 50vw;
+    height: 100vh;
+    clip-path: polygon(60% 0, 15% 50%, 40% 50%, 0 100%, 100% 40%, 60% 40%, 100% 0);
+    position: relative;
+}
+.power2:before {
+	content: '';
+	background: red;
+	width: 50vw;
+    height: 100vh;
+    clip-path: polygon(62% 2%, 20% 48%, 47.5% 48%, 8.5% 92.5%, 95% 41%, 55% 41%, 95% 2%);
+    position: absolute;
+}
+
+/*
+use like:
+  <div class="power1" />
+  <div class="power2" />
+*/
