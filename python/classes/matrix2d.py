@@ -106,6 +106,20 @@ class Matrix2D:
     
     def in_boundaries(self, x, y): return 0 <= x < self.cn and 0 <= y < self.rn
     
+    def print(self, rowsep = "\n", colsep = "  "):
+        collens = [max(len(str(n)) for n in self.iter_column_nodes(c)) for c in range(self.cn)]
+        print(collens)
+        ret = []
+        for r in range(self.rn):
+            row = []
+            for e, node in enumerate(self.iter_row_nodes(r)):
+                row.append("{}{}".format(
+                    " " * (collens[e] - len(str(node))),
+                    str(node) 
+                ))
+            ret.append(colsep.join(row))
+        return rowsep.join(ret)
+    
     @classmethod
     def validate(cls,
         matrix, 
