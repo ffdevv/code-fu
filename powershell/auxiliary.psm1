@@ -33,3 +33,12 @@ function HashtablesEq {
   }
   return $ret
 }
+
+function SecureString2PlaintextString {
+  Param(
+    [SecureString]$ss
+  )
+  return [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
+    [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($ss)
+  )
+}
