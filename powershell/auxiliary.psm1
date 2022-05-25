@@ -42,3 +42,11 @@ function SecureString2PlaintextString {
     [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($ss)
   )
 }
+
+function FileExists {
+  [OutputType([Bool])]
+  Param(
+    [String]$FilePath
+  )
+  return (Test-Path -Path $FilePath -PathType Leaf)
+}
