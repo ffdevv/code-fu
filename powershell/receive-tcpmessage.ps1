@@ -1,10 +1,15 @@
 # credit to: https://riptutorial.com/powershell/example/18117/tcp-listener
+# small edits by me
 
 Function Receive-TCPMessage {
     Param ( 
         [Parameter(Mandatory=$true, Position=0)]
         [ValidateNotNullOrEmpty()] 
         [int] $Port
+        
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [int] $BytesLength = 1024
     ) 
     Process {
         Try { 
@@ -18,7 +23,7 @@ Function Receive-TCPMessage {
         
             # Stream setup
             $stream = $data.GetStream() 
-            $bytes = New-Object System.Byte[] 1024
+            $bytes = New-Object System.Byte[] $BytesLength
 
             # Read data from stream and write it to host
             while (($i = $stream.Read($bytes,0,$bytes.Length)) -ne 0){
