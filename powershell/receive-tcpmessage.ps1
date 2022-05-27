@@ -5,7 +5,7 @@ Function Receive-TCPMessage {
     Param ( 
         [Parameter(Mandatory=$true, Position=0)]
         [ValidateNotNullOrEmpty()] 
-        [int] $Port
+        [int] $Port,
         
         [Parameter()]
         [ValidateNotNullOrEmpty()]
