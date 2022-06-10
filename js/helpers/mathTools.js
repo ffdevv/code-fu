@@ -37,8 +37,6 @@ export const leastCommonMultiple = lcm
 /** 
   FRACTIONS
   
-  TO DO:
-  refactor to object oriented
 */
 
 export const fractionIsInt = ([n, d]) => !(n%d);
