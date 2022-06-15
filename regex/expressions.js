@@ -1,4 +1,16 @@
 /**
+ * URL path parts
+ * group 1: protocol
+ * group 2: subdomain(s)
+ * group 3: second level domain
+ * group 4: top level domain
+ * group 5: port
+ * group 6: resource path
+ * group 7: query
+*/
+export const URL = /^(?:(.*):\/\/)?(?:(.*)\.)*(.+)\.([a-z]+)(?:\:(\d+))?(\/.*)?(?:\?(.*))$/i
+
+/**
  * Standard format for bcrypt hashes
  * group 1: version
  * group 2: cost factor (log saltRounds)
