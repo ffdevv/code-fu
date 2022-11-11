@@ -37,3 +37,11 @@ def popIf(a: list, i: int, f: Callable = lambda v: True):
   Does not throw in case <i> not in <a>
   """
   return a.pop(i) if -1 < i < len(a) and f(a[i]) else None
+
+def find(a: list, f: Callable, enumerate_: bool = False):
+  """
+  Return an iterator which yields the items matching f(item) for each item of a (list)
+  """
+  for i, item in enumerate(a):
+    if f(item):
+      yield (i, item) if enumerate_ else item
