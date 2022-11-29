@@ -9,14 +9,14 @@
   EG 1 Make a data process readable
     from .auxiliary.cyber_chef import Recipe
     
-    serialize_object = Recipe(
+    serialize_object = Recipe("serialize_object", # name of the recipe
       lambda o: o.__dict__,    # take the dict of the object
       "json_to_str",           # make a json string of it
       ("str_to_bytes", "utf8") # encode the string into bytes
       "bytes_to_b64"           # make a base64 string of those
     ).wrap()                   # or .wrap_debug(print) if you wanna dbg
     
-    unserialize_object = Recipe(
+    unserialize_object = Recipe("unserialize_object", # name of the recipe
       "b64_to_bytes",
       ("bytes_to_str", "utf8"),
       "str_to_json",
@@ -177,9 +177,15 @@ class Ingredients:
     if raise_on_None and (i is None):
       raise ValueError(f"Ingredient {name} not available")
     return i
+  
+  @classmethod
+  def add(cls, ingredient):
+    setattr(cls, ingredient.name, ingredient)
+    return getattr(cls, ingredient.name, None)
 
 class Recipe:
-  def __init__(self, *args):
+  def __init__(self, name, *args):
+    self.name = name
     self.ingredients = []
     for arg in args:
       if isinstance(arg, tuple):
@@ -237,12 +243,12 @@ class Recipe:
     )
 
 class Recipes:
-  urlencoded = Recipe(
+  urlencoded = Recipe("urlencoded",
     lambda s: str(s) if isinstance(s, (int, float)) else s,  # cast numbers to strings
     "urlencode"                                              # then urlencode
   )
 
-  to_urlencoded_b64_string = Recipe(
+  to_urlencoded_b64_string = Recipe("to_urlencoded_b64_string",
     lambda s: coherce_bytes(s, 'utf8'),   # cast everything to bytes
     "bytes_to_b64",                       # get a b64 encoded str
     "urlencode"                           # urlencode it
@@ -254,3 +260,8 @@ class Recipes:
     if raise_on_None and (i is None):
       raise ValueError(f"Recipe {name} not available")
     return i
+    
+  @classmethod
+  def add(cls, recipe):
+    setattr(cls, recipe.name, recipe)
+    return getattr(cls, recipe.name, None)
