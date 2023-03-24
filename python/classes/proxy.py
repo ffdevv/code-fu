@@ -1,62 +1,89 @@
+from typing import Optional
+
 def proxy_of_class(Class):
+  class Proxy(Class):
     """
-    Factory function that returns a Proxy class that inherits from the given class.
-
-    The Proxy class intercepts attribute access to the instance of the given class,
-    preventing access until the `init` method is called. Once initialized, the Proxy
-    forwards all attribute accesses to the underlying instance.
-
-    Args:
-        Class: The class to proxy.
-
-    Returns:
-        A Proxy class that inherits from the given class.
+    A Proxy class that forwards all attribute accesses to the underlying instance.
+    Access is prevented until the `init` method is called.
     """
-    class Proxy(Class):
-        def __init__(self, *args, **kwargs):
-            """
-            Initializes the Proxy.
+    def __init__(self, *args, **kwargs):
+      """
+      Initializes the Proxy.
 
-            Sets the `_inited` attribute to `False`, indicating that the Proxy has
-            not yet been initialized.
+      Args:
+        *args: Positional arguments to be passed to the parent class.
+        **kwargs: Keyword arguments to be passed to the parent class.
+      """
+      self._proxied = None
 
-            Args:
-                *args: Positional arguments to be passed to the parent class.
-                **kwargs: Keyword arguments to be passed to the parent class.
-            """
-            self._inited = False
+    def __getattribute__(self, name):
+      """
+      Overrides attribute access for the instance.
 
-        def __getattribute__(self, name):
-            """
-            Overrides the attribute access of the instance.
+      Raises a `RuntimeError` if the Proxy has not been initialized and the attribute
+      being accessed is not `_proxied`, `init`, `replace`, `__repr__`, or `__class__`.
 
-            If the attribute being accessed is not one of `_inited` or `init`, then
-            this method raises a `RuntimeError` if the `_inited` attribute is `False`.
+      Args:
+        name (str): The name of the attribute being accessed.
 
-            Args:
-                name: The name of the attribute being accessed.
+      Returns:
+        The value of the attribute.
+      """
+      pxd = super().__getattribute__("_proxied")
+      if pxd is None:
+        if not name in ["_proxied", "init", "replace", "__repr__", "__class__"]:
+          raise RuntimeError("Proxy not yet initialized")
+        return super().__getattribute__(name)
+      return pxd.__getattribute__(name)
 
-            Returns:
-                The value of the attribute.
+    def __setattr__(self, name, value):
+      """
+      Overrides attribute setting for the instance.
 
-            Raises:
-                RuntimeError: If the Proxy has not been initialized and the attribute
-                being accessed is not `_inited` or `init`.
-            """
-            if not name in ["_inited", "init"]:
-                if not self._inited:
-                    raise RuntimeError("Proxy not yet initialized")
-            return super().__getattribute__(name)
+      Raises a `RuntimeError` if the Proxy has not been initialized and the attribute
+      being accessed is not `_proxied` or `init`.
 
-        def init(self, *args, **kwargs):
-            """
-            Initializes the Proxy by initializing the underlying instance.
+      Args:
+        name (str): The name of the attribute being accessed.
+        value (any): The value to set the attribute to.
 
-            Args:
-                *args: Positional arguments to be passed to the parent class.
-                **kwargs: Keyword arguments to be passed to the parent class.
-            """
-            super().__init__(*args, **kwargs)
-            self._inited = True
+      Returns:
+        The value of the attribute.
+      """
+      if not name == "_proxied":
+        pxd = super().__getattribute__("_proxied")
+        if pxd is None:
+          raise RuntimeError("Proxy not yet initialized")
+        return pxd.__setattr__(name, value)
+      return super().__setattr__(name, value)
 
-    return Proxy
+    def init(self, *args, **kwargs):
+      """
+      Initializes the Proxy by initializing the underlying instance.
+
+      Args:
+        *args: Positional arguments to be passed to the parent class.
+        **kwargs: Keyword arguments to be passed to the parent class.
+      """
+      self._proxied = Class(*args, **kwargs)
+
+    def replace(self, instance: Class):
+      """
+      Replaces the proxied instance with the given instance.
+
+      Args:
+        instance (Class): The instance to replace the proxied instance with.
+      """
+      self._proxied = instance
+
+    def __repr__(self):
+      """
+      Returns a string representation of the Proxy instance.
+
+      Returns:
+        A string representation of the Proxy instance.
+      """
+      cls = super().__getattribute__("__class__")
+      return "ProxyOf" + cls.__bases__[0].__name__
+
+  return Proxy
