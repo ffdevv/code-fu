@@ -2,6 +2,8 @@
 from dotenv import dotenv_values
 import json
 
+_MANDATORY_NO_DEFAULT = Ellipsis
+
 class Config:
   """Represents a configuration for a program.
 
@@ -25,11 +27,10 @@ class Config:
 
   # Define the default values for the configuration options
   DEFAULTS = {
-    # Ellipsis are mandatory without a default
-    "dbHost": Ellipsis,
-    "dbPort": Ellipsis,
-    "dbUsername": Ellipsis,
-    "dbPassword": Ellipsis
+    "dbHost": _MANDATORY_NO_DEFAULT,
+    "dbPort": _MANDATORY_NO_DEFAULT,
+    "dbUsername": _MANDATORY_NO_DEFAULT,
+    "dbPassword": _MANDATORY_NO_DEFAULT
   }
 
   def __init__(self, filepath: str = '.env'):
@@ -45,7 +46,7 @@ class Config:
     # Set the configuration options for the object using the loaded values
     for k, v in self.DEFAULTS.items():
       v1 = values.get(k, v)
-      if v1 == Ellipsis:
+      if v1 == _MANDATORY_NO_DEFAULT:
         raise KeyError("config file missing mandatory field: " + k)
       setattr(self, k, v1)
 
