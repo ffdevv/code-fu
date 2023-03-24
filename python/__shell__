@@ -1,0 +1,2 @@
+#! /bin/bash
+bash -i <<< 'source ./venv/bin/activate; exec </dev/tty'
