@@ -1,9 +1,9 @@
 import logging
-from typing import Callable
+from typing import Callable, Optional
 
 # Define a type alias for the log hook function
-# level, message -> None
-LogHookFunction =  Callable[[int, str], None]
+# level, message, self -> None
+LogHookFunction =  Callable[[int, str, "Logger"], None]
 
 class Logger:
   """A logger class that provides logging functionality to a Python program.
@@ -63,7 +63,7 @@ class Logger:
       message (str): The message to be logged.
     """
     if not self._log_hook is None:
-      self._log_hook(level, message)
+      self._log_hook(level, message, self)
 
     self.logger.log(level, message)
 
@@ -73,7 +73,7 @@ class Logger:
     Args:
       message (str): The message to be logged.
     """
-    self.logger.log(logging.DEBUG, message)
+    self.log(logging.DEBUG, message)
 
   def info(self, message: str):
     """Logs a message at the INFO level.
@@ -81,7 +81,7 @@ class Logger:
     Args:
       message (str): The message to be logged.
     """
-    self.logger.log(logging.INFO, message)
+    self.log(logging.INFO, message)
 
   def warning(self, message: str):
     """Logs a message at the WARNING level.
@@ -89,7 +89,7 @@ class Logger:
     Args:
       message (str): The message to be logged.
     """
-    self.logger.log(logging.WARNING, message)
+    self.log(logging.WARNING, message)
 
   def error(self, message: str):
     """Logs a message at the ERROR level.
@@ -97,7 +97,7 @@ class Logger:
     Args:
       message (str): The message to be logged.
     """
-    self.logger.log(logging.ERROR, message)
+    self.log(logging.ERROR, message)
 
   def critical(self, message: str):
     """Logs a message at the CRITICAL level.
@@ -105,4 +105,4 @@ class Logger:
     Args:
       message (str): The message to be logged.
     """
-    self.logger.log(logging.CRITICAL, message)
+    self.log(logging.CRITICAL, message)
