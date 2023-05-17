@@ -2,6 +2,10 @@
   This Module will test empirically the Monty Hall Paradox
   usage:
       python monty_hall.py
+
+  moral:
+      - don't ignore the past.
+      - if you're offered a deal that has less chance to be bad for you than the one you took before: take it.
 """
 
 from os import urandom
@@ -35,7 +39,7 @@ def free_check(doors, choice):
     return empty_checkable_doors[rnd(len(empty_checkable_doors))]
 
 
-def play(change: bool = False, nd: int = 3):
+def play(change: bool = False, nd: int = 3, ignore_past: bool = False):
     doors = setup_doors(nd)
     # print(f"Here are the {nd} closed doors")
 
@@ -45,11 +49,24 @@ def play(change: bool = False, nd: int = 3):
     open_free = free_check(doors, first_choice)
     # print(f"The door {open_free + 1} equal {doors[open_free]}")
 
+    if ignore_past == True:
+        can_still_be_opened = [
+            i for i in range(nd)
+            if not i in [open_free]
+        ]
+        return doors[
+            can_still_be_opened[
+                rnd(len(can_still_be_opened))
+            ]
+        ]
+
     if change == False:
         return doors[first_choice]
 
     can_still_be_opened = [
         i for i in range(nd)
+        # since you're not ignoring the past
+        # you don't want your first choice
         if not i in [first_choice, open_free]
     ]
     n_unchosed_closed_doors = len(can_still_be_opened)
@@ -68,4 +85,8 @@ if __name__ == "__main__":
     print(
         "If changing the door:    ",
         test(lambda: play(change=True))
+    )
+    print(
+        "If you ignore the past:  ",
+        test(lambda: play(ignore_past=True))
     )
