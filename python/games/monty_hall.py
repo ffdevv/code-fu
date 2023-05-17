@@ -13,7 +13,7 @@ def rnd(i: int) -> int:
     return int(urandom(1)[0] % i)
 
 
-def test(func, times: int = 100000):
+def test(func, times: int = 100_000):
     return Counter([func() for _ in range(times)])
 
 
