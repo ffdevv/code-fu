@@ -10,7 +10,14 @@ bin2sc() {
 
 #####
 # asm2bine <filename-without-extension>
-#  will compile the .asm file all the way down to the binary (.o as intermediate) then try to execute the binary
+#   will compile the .asm file all the way down to the binary (.o as intermediate) then try to execute the binary
 asm2bine() {
     nasm -f elf32 "$1".asm -o "$1".o && ld -m elf_i386 "$1".o -o "$1" && ./"$1"
+}
+
+####
+# disasm
+#   will disassemble the binary
+disasm() {
+    objdump -d -M intel "$1"
 }
