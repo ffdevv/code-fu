@@ -1,3 +1,4 @@
+// test shell code
 // gcc -m32 -g -fno-stack-protector -z execstack testshc.c -o testshc -w
 #include <sys/mman.h>
 #include <errno.h>
