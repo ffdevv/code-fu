@@ -1,5 +1,5 @@
 // test shell code
-// gcc -m32 -g -fno-stack-protector -z execstack testshc.c -o testshc -w
+// gcc -m32 -g -fno-stack-protector -z execstack tsc.c -o tsc -w && ./tsc
 #include <sys/mman.h>
 #include <errno.h>
 
