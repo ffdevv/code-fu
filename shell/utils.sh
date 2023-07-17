@@ -21,3 +21,12 @@ asm2bine() {
 disasm() {
     objdump -d -M intel "$1"
 }
+
+####
+# strlen
+#  will return the size of the string in bytes
+strlen() {
+    local l
+    l=$(printf '%s' "$1" | wc -c)
+    echo $((l - 1))
+}
