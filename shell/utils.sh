@@ -9,10 +9,17 @@ bin2sc() {
 }
 
 #####
-# asm2bine <filename-without-extension>
-#   will compile the .asm file all the way down to the binary (.o as intermediate) then try to execute the binary
-asm2bine() {
+# asm2bin32e <filename-without-extension>
+#   will compile the .asm file all the way down to the binary x86 (.o as intermediate) then try to execute the binary
+asm2bin32e() {
     nasm -f elf32 "$1".asm -o "$1".o && ld -m elf_i386 "$1".o -o "$1" && ./"$1"
+}
+
+#####
+# asm2bin32 <filename-without-extension>
+#   will compile the .asm file all the way down to the binary x86 (.o as intermediate)
+asm2bin32() {
+    nasm -f elf32 "$1".asm -o "$1".o && ld -m elf_i386 "$1".o -o "$1"
 }
 
 ####
