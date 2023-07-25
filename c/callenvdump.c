@@ -4,7 +4,7 @@
     https://stackoverflow.com/a/47160224
     https://stackoverflow.com/a/2085385
     https://stackoverflow.com/a/12059006
-    
+    https://stackoverflow.com/a/45840521
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,9 @@ extern char **environ;
 int main(int argc, char *argv[]) {
   char *ptr;
   int i;
-  const char delim[] = "=";
+  const char delim[2] = "="; // =\0
+  const uint ldelim = 1;
+  int delimat;
 
   puts("Arguments:");
   for (i = 0; i < argc; i++) {
@@ -34,10 +36,12 @@ int main(int argc, char *argv[]) {
   printf("  _:       %p, %s\n", underscore, underscore);
 
   puts("variables:");
-  for (char **env = environ; *env != 0; env++)
+  char **env = environ;
+  for (; *env; env++)
   {
     char *variable = *env;
-    printf("  %s:       %p\n", strtok(variable, delim) ,variable);    
+    delimat = (int) strcspn(variable, delim);
+    printf("  %.*s:       %p\n", delimat, variable, variable + delimat + ldelim);
   }
 
   puts("arguments:");
