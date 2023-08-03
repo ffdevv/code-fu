@@ -36,14 +36,14 @@ def rndbetween(from_: int, to: int) -> int:
 
 def rndindexw(
         seq: Sequence, 
-        weights: Sequence[Union[int, float]]
+        weights: Sequence[Weight]
     ) -> int:
     """
     Get a random index from a sequence, given an associated sequence of weights.
     
     Args:
     seq (Sequence): The sequence to choose from.
-    weights (Sequence[Union[int, float]]): A sequence of weights, corresponding to seq.
+    weights (Sequence[Weight]): A sequence of weights, corresponding to seq.
     
     Example:
     >>> rndindexw(['a', 'b', 'c'], [1, 3, 1])
@@ -56,7 +56,7 @@ def rndindexw(
 
 def rndindexesw(
         seq: Sequence, 
-        weights: Sequence[Union[int, float]], 
+        weights: Sequence[Weight], 
         k: int
     ) -> int:
     """
@@ -64,7 +64,7 @@ def rndindexesw(
     
     Args:
     seq (Sequence): The sequence to choose from.
-    weights (Sequence[Union[int, float]]): A sequence of weights, corresponding to seq.
+    weights (Sequence[Weight]): A sequence of weights, corresponding to seq.
     k (int): The number of indexes to choose.
     
     Example:
