@@ -49,10 +49,11 @@ def serializable(
                                  "izers, deserializers, field_mapping")
             cls._Serializable__schema = schema
             cls._Serializable__field_mapping = {
-                field_name: field_obj.attribute or field_name for field_name, field_obj in schema().fields.items()
+                field_name: field_obj.attribute or field_name 
+                for field_name, field_obj in schema().fields.items()
             }
             cls._Serializable__field_mapping_r = {
-                v: k for k, v in cls._Serializable__field_mapping
+                v: k for k, v in cls._Serializable__field_mapping.items()
             }
             return cls
             
@@ -74,7 +75,7 @@ def serializable(
         
         cls._Serializable__field_mapping = field_mapping
         cls._Serializable__field_mapping_r = {
-            v: k for k, v in cls._Serializable__field_mapping
+            v: k for k, v in cls._Serializable__field_mapping.items()
         }
         
         return cls
@@ -151,7 +152,7 @@ class Serializable:
         if schema := self._Serializable__schema:
             return schema.dump(self)
         return {
-            field: self._Serializable__serialize(field)
+            self.field_maps_to(field): self._Serializable__serialize(field)
             for field in self._Serializable__fields
         }
 
@@ -160,11 +161,14 @@ class Serializable:
         if schema := cls._Serializable__schema:
             return schema.load(d)
         return {
-            field: cls._Serializable__deserialize(
-                field,
-                d[field]
+            deserial: cls._Serializable__deserialize(
+                deserial,
+                d[serial]
             )
-            for field in cls._Serializable__fields 
+            for serial, deserial in map(
+                lambda deserial: (cls.field_maps_to(deserial), deserial), 
+                cls._Serializable__fields
+            )
         }
     
     def _to_json(self) -> str:
@@ -174,7 +178,7 @@ class Serializable:
         )
     
     @classmethod
-    def _from_json(self, s: str):
+    def _from_json(cls, s: str):
         return cls.from_dict(json.loads(
             s,
             cls=cls._Serializable__json_decoder
