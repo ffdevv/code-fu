@@ -2,7 +2,6 @@ import json
 from collections import OrderedDict
 from typing import Dict, Callable, TypedDict, Any, Type, List, Union, Literal
 
-# uncomment the following lines if you want to enable schema validation
 # from marshmallow import Schema as MarshmallowSchema
 SchemaType    = Any # MarshmallowSchema
 
@@ -22,6 +21,7 @@ def serializable(
         deserializers : SerializingMapping = {},
         json_encoder  : json.JSONEncoder   = None,
         json_decoder  : json.JSONDecoder   = None,
+        field_mapping : Dict[str, str]     = {},
     ):
     """
     A decorator that makes a class inherit from Serializable if it's not already.
@@ -42,11 +42,18 @@ def serializable(
                     deserializers,
                     json_encoder,
                     json_decoder,
+                    field_mapping,
                 ]):
                 raise ValueError("Schema serialization cant be provided with " \
                                  "any of these params (fields, nested, serial" \
-                                 "izers, deseri alizers")
+                                 "izers, deserializers, field_mapping")
             cls._Serializable__schema = schema
+            cls._Serializable__field_mapping = {
+                field_name: field_obj.attribute or field_name for field_name, field_obj in schema().fields.items()
+            }
+            cls._Serializable__field_mapping_r = {
+                v: k for k, v in cls._Serializable__field_mapping
+            }
             return cls
             
         cls._Serializable__fields.extend(fields)
@@ -64,7 +71,12 @@ def serializable(
             cls._Serializable__deserializers[k].update(
                 deserializers.get(k, {})
             )
-
+        
+        cls._Serializable__field_mapping = field_mapping
+        cls._Serializable__field_mapping_r = {
+            v: k for k, v in cls._Serializable__field_mapping
+        }
+        
         return cls
     return wrapped
 
@@ -76,10 +88,10 @@ class Serializable:
     instances of the class. It can be inherited from directly, or a class can
     be made to inherit from it using the @serializable decorator.
     """
-    __fields        : List[str]                         = []
-    __nested        : NestedMapping                     = {}
-    __schema        : SchemaType                        = None
-    __serializers   : SerializingMapping                = {
+    __fields         : List[str]                         = []
+    __nested         : NestedMapping                     = {}
+    __schema         : SchemaType                        = None
+    __serializers    : SerializingMapping                = {
         "key": {
             # "key": lambda o: o.__dict__,      # will serialize object at key 
             # "key" with its __dict__ property
@@ -93,7 +105,7 @@ class Serializable:
             # medium priority
         },
     }
-    __deserializers : SerializingMapping                = {
+    __deserializers  : SerializingMapping                = {
         "key": {
             # "key": lambda d: Serializable.deserialize(d), # will deserialize 
             # using a class method
@@ -106,8 +118,10 @@ class Serializable:
             # low priority
         }
     }
-    __json_encoder  : json.JSONEncoder                  = None
-    __json_decoder  : json.JSONDecoder                  = None
+    __json_encoder   : json.JSONEncoder                  = None
+    __json_decoder   : json.JSONDecoder                  = None
+    __field_mapping  : Dict[str, str]                    = {}
+    __field_mapping_r: Dict[str, str]                    = {}
 
     def __serialize(self, field):
         v = getattr(self, field)
@@ -166,6 +180,18 @@ class Serializable:
             cls=cls._Serializable__json_decoder
         ))
     
+    @classmethod
+    def field_maps_to(cls, unserialized_key: str):
+        return cls._Serializable__field_mapping.get(
+            unserialized_key, unserialized_key
+        )
+    
+    @classmethod
+    def field_maps_from(cls, serialized_key: str):
+        return cls._Serializable__field_mapping_r.get(
+            serialized_key, serialized_key
+        )
+    
     def to_dict(self) -> dict:
         return self._to_dict()
 
@@ -187,3 +213,12 @@ class Serializable:
     @classmethod
     def deserialize(cls, d: dict):
         return cls.from_dict(d)
+
+    @classmethod
+    def serialize_many(objs):
+        return list(map(lambda o: o.serialize(), objs))
+    
+    @classmethod
+    def deserialize_many(cls, dicts: List[dict]):
+        return list(map(cls.deserialize, dicts))
+
