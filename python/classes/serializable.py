@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from collections import OrderedDict
 from typing import Dict, Callable, TypedDict, Any, Type, List, Union, Literal
 
@@ -30,6 +31,14 @@ def serializable(
     def wrapped(cls):
         if not issubclass(cls, Serializable):
             cls = type(cls.__name__, (cls, Serializable), {})
+
+        # copy values from the base class
+        cls._Serializable__fields = deepcopy(cls._Serializable__fields)
+        cls._Serializable__nested = deepcopy(cls._Serializable__nested)
+        cls._Serializable__serializers = deepcopy(cls._Serializable__serializers)
+        cls._Serializable__deserializers = deepcopy(cls._Serializable__deserializers)
+        cls._Serializable__field_mapping = deepcopy(cls._Serializable__field_mapping)
+        cls._Serializable__field_mapping_r = deepcopy(cls._Serializable__field_mapping_r)
         
         cls._Serializable__json_encoder = json_encoder
         cls._Serializable__json_decoder = json_decoder
