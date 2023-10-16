@@ -8,33 +8,44 @@ function AES256-Decrypt {
         [string]$InputFile,
 
         [Parameter(Mandatory=$false)]
-        [string]$Base64Key,
+        [string]$KeyBase64,
         [Parameter(Mandatory=$false)]
-        [byte[]]$Key,
+        [byte[]]$KeyBytes,
 
         [Parameter(Mandatory=$false)]
-        [string]$Base64IV,
+        [string]$IVBase64,
         [Parameter(Mandatory=$false)]
-        [byte[]]$IV
+        [byte[]]$IVBytes
     )
 
-    process {
+    begin {
+        if (-not ($KeyBase64 -xor $KeyBytes)){
+            throw "Error: Either provide Key as Base64 or Bytes."
+        }
+        if (-not ($IVBase64 -xor $IVBytes)){
+            throw "Error: Either provide IV as Base64 or Bytes."
+        }
+        
+        $Key = if ($KeyBytes) { $KeyBytes } else { [System.Convert]::FromBase64String($KeyBase64) }
+        $IV  = if ($IVBytes ) { $IVBytes  } else { [System.Convert]::FromBase64String($IVBase64 ) }
 
-        if (-not ($Base64Key -xor $Key)){
-            throw "Error: Either provide Base64Key or Key."
+        # Create a list to hold data from the pipeline
+        $dataList = @()
+    }
+
+    process {
+        # If data is provided from the pipeline, add it to the dataList
+        if ($Data) {
+            $dataList += $Data
         }
-        if (-not ($Base64IV -xor $IV)){
-            throw "Error: Either provide Base64IV or IV."
-        }
-        
-        $Key = if ($Key) { $Key } else { [System.Convert]::FromBase64String($Base64Key) }
-        $IV  = if ($IV ) { $IV  } else { [System.Convert]::FromBase64String($Base64IV ) }
-        
-        # Read data from file or use the data provided via parameter or pipeline
-        $dataBytes = if ($InputFile) {
+    }
+    
+    end {
+        # Read code from file or use the code provided via parameter or pipeline
+        $dataBytes = if ($dataList.Count -gt 0) {
+            $dataList
+        } elseif ($InputFile) {
             [System.IO.File]::ReadAllBytes($InputFile)
-        } elseif ($Data) {
-            $Data
         } else {
             throw "Error: Either provide data through the pipeline, the Data parameter, or specify an InputFile."
         }
@@ -51,13 +62,13 @@ function AES256-Decrypt {
         $result = $aes.CreateDecryptor().TransformFinalBlock($dataBytes, 0, $dataBytes.Length)
 
         # Output the decrypted string
-        $decryptedString
+        $result
     }
 }
 
 # Example usage:
 # From a file with specified key and IV
-# $decrypted = AES256-Decrypt -InputFile "path\to\encrypted\file" -Base64Key "yourBase64Key" -Base64IV "yourBase64IV"
+# $decrypted = AES256-Decrypt -InputFile "path\to\encrypted\file" -KeyBase64 "yourBase64Key" -IVBase64 "yourBase64IV"
 
 # From pipeline with raw key and IV
 # $decrypted = $encryptedData | AES256-Decrypt -Key $rawKey -IV $rawIV
